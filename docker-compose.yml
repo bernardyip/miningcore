@@ -1,0 +1,55 @@
+version: "3.1"
+   
+services:
+  miningcore_pool:
+    build: .
+    restart: always
+    volumes:
+      - /miningcore/config.json:/config.json
+    ports:
+      # stratum
+      - 3052:3052
+      # web api
+      - 4000:4000
+    depends_on:
+      - bitcoind
+      - postgres
+  postgres:
+    image: postgres
+    restart: always
+    volumes:
+      - /miningcore/postgres:/var/lib/postgresql/data
+      - ./src/Miningcore/Persistence/Postgres/Scripts/initialize_shares.sql:/docker-entrypoint-initdb.d/03initialize_shares.sql
+      - ./src/Miningcore/Persistence/Postgres/Scripts/createdb.sql:/docker-entrypoint-initdb.d/01createdb.sql
+      - ./src/Miningcore/Persistence/Postgres/Scripts/createdb_postgresql_11_appendix.sql:/docker-entrypoint-initdb.d/02createdb_postgresql_11_appendix.sql
+    environment:
+      - POSTGRES_DB=miningcore
+      - POSTGRES_USER=miningcore
+      - POSTGRES_PASSWORD=miningcore
+    ports:
+      # postgres
+      - 5432:5432
+   # This should not be used in production are we are using a pruned node from prunednode.today
+   # We are trusting that website to give us the proper blockchain information which could be
+   # hijacked by malicious people to use a different block chain
+  bitcoind:
+    image: eznode/eznode
+    restart: always
+    environment:
+      - TRUSTED_FASTSYNC=1
+      - FASTSYNC_PARALLEL=8
+      - NETWORK=bitcoin
+      - EXPLORER=0
+      - EXPLORER_LOGS=0
+      - BWT=0
+      - BITCOIND_RPC_ACCESS=user:password
+      - BITCOIND_OPTS=-dbcache=4096 -zmqpubrawblock=tcp://0.0.0.0:29000 -zmqpubrawtx=tcp://0.0.0.0:29000 -zmqpubhashtx=tcp://0.0.0.0:29000 -zmqpubhashblock=tcp://0.0.0.0:29000
+    extra_hosts:
+      host.docker.internal: host-gateway
+    volumes:
+      - /miningcore/bitcoind/data:/data
+    ports:
+      # mainnet rpc
+      - 8332:8332
+      # mainnet p2p
+      - 8333:8333
