@@ -20,7 +20,9 @@ RUN echo "deb https://mirror.0x.sg/ubuntu focal main restricted" > /etc/apt/sour
     cd /miningcore/src/Miningcore && \
     sh linux-build.sh && \
     mkdir -p /miningcoreapp && \
-    cp -r ../../build/* /miningcoreapp/
+    cp -r ../../build/* /miningcoreapp/ && \
+    apt-get -y purge cmake build-essential libssl-dev pkg-config libboost-all-dev libsodium-dev libzmq3-dev && \
+    apt-get -y autoremove
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-focal
 
@@ -37,7 +39,7 @@ RUN echo "deb https://mirror.0x.sg/ubuntu focal main restricted" > /etc/apt/sour
     echo "deb https://mirror.0x.sg/ubuntu focal-security universe" >> /etc/apt/sources.list && \
     echo "deb https://mirror.0x.sg/ubuntu focal-security multiverse" >> /etc/apt/sources.list && \
     apt-get update -y && \
-    apt-get -y install libzmq3-dev
+    apt-get -y install libzmq3-dev libboost-system1.71.0 libboost-date-time1.71.0
 
 WORKDIR /miningcoreapp
 
