@@ -1,11 +1,9 @@
-FROM mcr.microsoft.com/dotnet/sdk:3.1-focal
+FROM mcr.microsoft.com/dotnet/sdk:5.0-focal
 MAINTAINER bernardyip@outlook.com
 
 # Install dependencies and build miningcore
 COPY . /miningcore/
-RUN ls -la / && \
-    ls -la /miningcore/ && \
-    echo "deb https://mirror.0x.sg/ubuntu focal main restricted" > /etc/apt/sources.list && \
+RUN echo "deb https://mirror.0x.sg/ubuntu focal main restricted" > /etc/apt/sources.list && \
     echo "deb https://mirror.0x.sg/ubuntu focal-updates main restricted" >> /etc/apt/sources.list && \
     echo "deb https://mirror.0x.sg/ubuntu focal universe" >> /etc/apt/sources.list && \
     echo "deb https://mirror.0x.sg/ubuntu focal-updates universe" >> /etc/apt/sources.list && \
@@ -24,7 +22,7 @@ RUN ls -la / && \
     mkdir -p /miningcoreapp && \
     cp -r ../../build/* /miningcoreapp/
 
-FROM mcr.microsoft.com/dotnet/sdk:3.1-focal
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-focal
 
 # Copy files over and install dependencies
 COPY --from=0 /miningcoreapp/ /miningcoreapp/
