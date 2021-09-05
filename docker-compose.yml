@@ -1,7 +1,7 @@
 version: "3.1"
    
 services:
-  miningcore_pool:
+  miningcore:
     build: .
     restart: always
     volumes:
@@ -19,9 +19,10 @@ services:
     restart: always
     volumes:
       - /miningcore/postgres:/var/lib/postgresql/data
-      - ./src/Miningcore/Persistence/Postgres/Scripts/initialize_shares.sql:/docker-entrypoint-initdb.d/03initialize_shares.sql
+      - /miningcore/log:/miningcore/log
       - ./src/Miningcore/Persistence/Postgres/Scripts/createdb.sql:/docker-entrypoint-initdb.d/01createdb.sql
       - ./src/Miningcore/Persistence/Postgres/Scripts/createdb_postgresql_11_appendix.sql:/docker-entrypoint-initdb.d/02createdb_postgresql_11_appendix.sql
+      - ./src/Miningcore/Persistence/Postgres/Scripts/initialize_shares.sql:/docker-entrypoint-initdb.d/03initialize_shares.sql
     environment:
       - POSTGRES_DB=miningcore
       - POSTGRES_USER=miningcore
