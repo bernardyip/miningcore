@@ -6,6 +6,7 @@ services:
     restart: always
     volumes:
       - /miningcore/config.json:/config.json
+      - /miningcore/log:/miningcore/log
     ports:
       # stratum
       - 3052:3052
@@ -19,7 +20,6 @@ services:
     restart: always
     volumes:
       - /miningcore/postgres:/var/lib/postgresql/data
-      - /miningcore/log:/miningcore/log
       - ./src/Miningcore/Persistence/Postgres/Scripts/createdb.sql:/docker-entrypoint-initdb.d/01createdb.sql
       - ./src/Miningcore/Persistence/Postgres/Scripts/createdb_postgresql_11_appendix.sql:/docker-entrypoint-initdb.d/02createdb_postgresql_11_appendix.sql
       - ./src/Miningcore/Persistence/Postgres/Scripts/initialize_shares.sql:/docker-entrypoint-initdb.d/03initialize_shares.sql
